@@ -11,7 +11,7 @@
 const currentUrl = window.location.search;
 const urlParams = new URLSearchParams(currentUrl);
 const id = urlParams.get("id");
-console.log(id);
+let itemPrice = 0;
 
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((res) => res.json())
@@ -24,6 +24,7 @@ function addProducts(kanap) {
   makePrice(price);
   makeDescription(description);
   makeColors(colors);
+  itemPrice = price;
 }
 
 function makeImage(imageUrl, altTxt) {
@@ -57,4 +58,24 @@ function makeColors(colors) {
       select.appendChild(option);
     });
   }
+}
+
+const button = document.getElementById("addToCart");
+if (button != null) {
+  button.addEventListener("click", (e) => {
+    const color = document.getElementById("colors").value;
+    const quantity = document.getElementById("quantity").value;
+    if (color == null || color == "" || quantity == null || quantity == 0) {
+      alert("Veuillez sélectionner une couleur et une quantité");
+    }
+    const data = {
+      id: id,
+      color: color,
+      quantity: quantity,
+      price: itemPrice,
+    };
+
+    localStorage.setItem(id, JSON.stringify(data));
+    window.location.href = "./cart.html";
+  });
 }
