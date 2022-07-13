@@ -11,20 +11,26 @@
 const currentUrl = window.location.search;
 const urlParams = new URLSearchParams(currentUrl);
 const id = urlParams.get("id");
-let itemPrice = 0;
+if (id != null) {
+  let itemPrice = 0;
+  let imgUrl, altText, articleName;
+}
 
 fetch(`http://localhost:3000/api/products/${id}`)
   .then((res) => res.json())
   .then((data) => addProducts(data));
 
 function addProducts(kanap) {
-  const { altTxt, colors, description, imageUrl, name, price, _id } = kanap;
+  const { altTxt, colors, description, imageUrl, name, price } = kanap;
+  itemPrice = price;
+  imgUrl = imageUrl;
+  altText = altTxt;
+  articleName = name;
   makeImage(imageUrl, altTxt);
   makeTitle(name);
   makePrice(price);
   makeDescription(description);
   makeColors(colors);
-  itemPrice = price;
 }
 
 function makeImage(imageUrl, altTxt) {
@@ -36,20 +42,20 @@ function makeImage(imageUrl, altTxt) {
 }
 
 function makeTitle(name) {
-  document.getElementById("title").textContent = name;
+  const h1 = document.querySelector("#title");
+  if (h1 != null) h1.textContent = name;
 }
 
 function makePrice(price) {
-  if (price != null) document.getElementById("price").textContent = price;
+  const span = document.querySelector("#price");
+  if (span != null) span.textContent = price;
 }
-
 function makeDescription(description) {
-  const p = document.getElementById("description");
+  const p = document.querySelector("#description");
   if (p != null) p.textContent = description;
 }
-
 function makeColors(colors) {
-  const select = document.getElementById("colors");
+  const select = document.querySelector("#colors");
   if (select != null) {
     colors.forEach((color) => {
       const option = document.createElement("option");
@@ -60,22 +66,37 @@ function makeColors(colors) {
   }
 }
 
-const button = document.getElementById("addToCart");
-if (button != null) {
-  button.addEventListener("click", (e) => {
-    const color = document.getElementById("colors").value;
-    const quantity = document.getElementById("quantity").value;
-    if (color == null || color == "" || quantity == null || quantity == 0) {
-      alert("Veuillez sélectionner une couleur et une quantité");
-    }
-    const data = {
-      id: id,
-      color: color,
-      quantity: quantity,
-      price: itemPrice,
-    };
+const button = document.querySelector("#addToCart");
+button.addEventListener("click", handleClick);
 
-    localStorage.setItem(id, JSON.stringify(data));
-    window.location.href = "./cart.html";
-  });
+function handleClick() {
+  const color = document.querySelector("#colors").value;
+  const quantity = document.querySelector("#quantity").value;
+
+  if (isOrderInvalid(color, quantity)) return;
+  saveOrder(color, quantity);
+  redirectToCart();
+}
+
+function saveOrder(color, quantity) {
+  const key = `${id}-${color}`;
+  const data = {
+    id: id,
+    color: color,
+    quantity: Number(quantity),
+    price: itemPrice,
+    imageUrl: imgUrl,
+    altTxt: altText,
+    name: articleName,
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+}
+function isOrderInvalid(color, quantity) {
+  if (color == null || color === "" || quantity == null || quantity == 0) {
+    alert("Veuillez sélectionner une couleur et une quantité ");
+    return true;
+  }
+}
+function redirectToCart() {
+  window.location.href = "cart.html";
 }
