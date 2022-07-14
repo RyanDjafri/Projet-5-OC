@@ -25,3 +25,41 @@
               <p>Total (<span id="totalQuantity"><!-- 2 --></span> articles) : <span id="totalPrice"><!-- 84,00 --></span> €</p>
             </div>
             */
+
+const cart = [];
+
+function getKanaps() {
+  const numberOfItems = localStorage.length;
+  for (let i = 0; i < numberOfItems; i++) {
+    const item = localStorage.getItem(localStorage.key(i));
+    const itemObject = JSON.parse(item);
+    cart.push(itemObject);
+  }
+}
+getKanaps();
+
+cart.forEach((kanap) => displayKanap(kanap));
+
+function displayKanap(kanap) {
+  const article = makeArticle(kanap);
+  displayArticle(article);
+  const image = makeImage(kanap);
+  console.log(article);
+}
+function displayArticle(article) {
+  document.querySelector("#cart__items").appendChild(article);
+}
+function makeArticle(kanap) {
+  const article = document.createElement("article");
+  article.classList.add("card__item");
+  article.dataset.id = kanap.id;
+  article.dataset.color = kanap.color;
+  return article;
+}
+
+function makeImage(kanap) {
+  const image = document.createElement("img");
+  image.src = kanap.imageUrl;
+  image.alt = kanap.altTxt;
+  return image;
+}
