@@ -75,7 +75,6 @@ button.addEventListener("click", handleClick);
 function handleClick() {
   const color = document.querySelector("#colors").value;
   const quantity = document.querySelector("#quantity").value;
-
   if (isOrderInvalid(color, quantity)) return;
   saveOrder(color, quantity);
 }
@@ -99,8 +98,12 @@ function saveOrder(color, quantity) {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 function isOrderInvalid(color, quantity) {
+  if (quantity > 100) {
+    alert("La limite maximale autorisée est de 100");
+    return true;
+  }
   if (color == null || color === "" || quantity == null || quantity == 0) {
-    alert("Veuillez sélectionner une couleur et une quantité ");
+    alert("Veuillez sélectionner une couleur et une quantité entre 1 et 100");
     return true;
   }
 }
