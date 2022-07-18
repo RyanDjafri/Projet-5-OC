@@ -14,6 +14,9 @@ const id = urlParams.get("id");
 if (id != null) {
   let itemPrice = 0;
   let imgUrl, altText, articleName;
+} else {
+  alert("Aucun canapé sélectionner, veuillez retourner sur la page d'accueil");
+  window.location.href = "index.html";
 }
 
 fetch(`http://localhost:3000/api/products/${id}`)
@@ -75,28 +78,29 @@ function handleClick() {
 
   if (isOrderInvalid(color, quantity)) return;
   saveOrder(color, quantity);
-  redirectToCart();
 }
 
 function saveOrder(color, quantity) {
-  const key = `${id}-${color}`;
+  // si je n'ai pas de panier en storage alors je créer un tableau vide et je met mon canapé (id, quantité, couleur) sinon je  récupère le panier et j'ajoute le canapé (id, quantité, couleur)
+  let cart = localStorage.getItem("cart");
   const data = {
     id: id,
     color: color,
     quantity: Number(quantity),
-    price: itemPrice,
-    imageUrl: imgUrl,
-    altTxt: altText,
-    name: articleName,
   };
-  localStorage.setItem(key, JSON.stringify(data));
+  if (cart == null) {
+    cart = [];
+    cart.push(data);
+  } else {
+    cart = JSON.parse(cart);
+    cart.push(data);
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
 function isOrderInvalid(color, quantity) {
   if (color == null || color === "" || quantity == null || quantity == 0) {
     alert("Veuillez sélectionner une couleur et une quantité ");
     return true;
   }
-}
-function redirectToCart() {
-  window.location.href = "cart.html";
 }
