@@ -37,13 +37,26 @@ function handleClick() {
 }
 
 function saveOrder(color, quantity) {
-  const key = `${id}-${color}`;
+  // si je n'ai pas de panier en storage
+  let cart = localStorage.getItem("cart");
   const data = {
     id: id,
     color: color,
     quantity: Number(quantity),
   };
-  localStorage.setItem(key, JSON.stringify(data));
+  if (cart === null) {
+    // alors je créer un panier (tableau vide) puis j'ajoute data au panier puis je met le panier en storage
+    cart = [];
+    cart.push(data);
+    localStorage.setItem("cart", JSON.stringify(cart));
+  } else {
+    // sinon je récupère le panier puis j'ajoute data au panier puis je met le panier en storage
+    let cartStorage = JSON.parse(cart);
+    // si j'ai le meme id et meme couleur alors j'aditionne la quantité
+
+    cartStorage.push(data);
+    localStorage.setItem("cart", JSON.stringify(cartStorage));
+  }
 }
 function checkOrder(color, quantity) {
   if (quantity > 100) {
